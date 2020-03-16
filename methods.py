@@ -41,7 +41,7 @@ def check_new_user(user, webhookEvent):
 def give_intro(user, webhookEvent):
     debug('give_intro', 'start')
 
-    if webhookEvent['message']['text'].lower().find('tell me more') >= 0:
+    if webhookEvent['message']['text'].lower().find('tell me more') >= 0 or webhookEvent['message']['text'].lower().find('what is this') >= 0:
         # print("Enter give_intro")
         quick_replies = [
             {
@@ -124,7 +124,7 @@ def catch_long_request(user, webhookEvent):
     # TO DO prompt the user to use a shorter time if input is too long
     if webhookEvent['message']['text'].lower().find("longer time") >= 0:
         # print("Enter catch_long_request")
-        Facebook.send_message(user.uid, "A budget period that is longer than two weeks is difficult to track. "
+        Facebook.send_message(user.uid, "A budget period longer than two weeks is difficult to track. "
                                         + "We encourage you to choose a shorter period.")
 
         webhookEvent['message']['text'] = 'get started'
@@ -265,6 +265,27 @@ def initiate_report(user, webhookEvent):
         return True
 
 
+def plain_message(user, webhookEvent):
+    debug('plain_message', 'start')
+
+    if webhookEvent['message']['text'].lower().find('report') >= 0:
+        Facebook.send_message(user.uid, "To report an expense, enter an amount starts with a dollar sign. ")
+
+        debug('plain_message', 'end false')
+        return False
+
+    elif webhookEvent['message']['text'].lower().find('spent nothing') >= 0:
+        Facebook.send_message(user.uid, "Nice job, {}!".format(user.first_name))
+
+        debug('plain_message', 'end false')
+        return False
+
+    else:
+
+        debug('plain_message', 'end true')
+        return True
+
+
 def catch_all(user, webhookEvent):
     debug('catch_all', 'start')
 
@@ -272,12 +293,6 @@ def catch_all(user, webhookEvent):
 
     if user.user_status == "in_budget_cycle":
         quick_replies = [
-            {
-                "content_type": "text",
-                "title": "What should I do next?",
-                "payload": "whats_next",
-                "image_url": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/facebook/230/thinking-face_1f914.png"
-            },
             {
                 "content_type": "text",
                 "title": "Report a spending",
