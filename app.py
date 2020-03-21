@@ -41,6 +41,8 @@ def webhook_get():
 def webhook_post():
     body = request.get_json()
     
+    print(body)
+    
     if body["object"] == "page":
         for entry in body["entry"]:
             for webhookEvent in entry['messaging']:
