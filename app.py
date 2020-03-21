@@ -54,6 +54,10 @@ def webhook_post():
                 Facebook.sender_action(user.uid, 'mark_seen')
                 Facebook.sender_action(user.uid, 'typing_on')
                 
+                if 'text' not in webhookEvent['message']:
+                    Facebook.send_message(user.uid, "Sorry, we cannot handle this type of message.")
+                    continue
+                
                 for method in method_list:
                     if method(user, webhookEvent):
                         continue
